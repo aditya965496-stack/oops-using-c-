@@ -1,1 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ OOP — Complete Study Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #21262d;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --accent3: #f78166;
+  --accent4: #d2a8ff;
+  --accent5: #ffa657;
+  --yellow: #e3b341;
+  --code-bg: #161b22;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+}
 
+/* SIDEBAR */
+#sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+#sidebar-header {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: var(--bg2);
+  z-index: 2;
+}
+#sidebar-header h1 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+#sidebar-header p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+#search-input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: 'Sora', sans-serif;
+  outline: none;
+}
+#search-input:focus { border-color: var(--accent); }
+#search-input::placeholder { color: var(--muted); }
+
+.nav-section { padding: 8px 0; }
+.nav-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 16px 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  color: var(--muted);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { color: var(--text); background: var(--bg3); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(88,166,255,0.06); }
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* MAIN */
+#main {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+}
+#progress-bar {
+  height: 2px;
+  background: var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent4));
+  transition: width 0.3s;
+  width: 0%;
+}
+
+#content {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+}
+
+/* TOPIC CARD */
+.topic-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 32px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.topic-card:hover { border-color: var(--border); }
+
+.topic-header {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  user-select: none;
+}
+.topic-header:hover { background: var(--bg3); }
+.topic-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topic-num {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.topic-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.topic-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.chevron {
+  color: var(--muted);
+  font-size: 18px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.topic-card.open .chevron { transform: rotate(180deg); }
+
+.topic-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 24px;
+}
+.topic-card.open .topic-body { display: block; }
+
+/* CONTENT ELEMENTS */
+.concept-box {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--accent);
+}
+.concept-box.green { border-left-color: var(--accent2); }
+.concept-box.orange { border-left-color: var(--accent5); }
+.concept-box.purple { border-left-color: var(--accent4); }
+.concept-box.red { border-left-color: var(--accent3); }
+.concept-box.yellow { border-left-color: var(--yellow); }
+
+.concept-box h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.concept-box.green h3 { color: var(--accent2); }
+.concept-box.orange h3 { color: var(--accent5); }
+.concept-box.purple h3 { color: var(--accent4); }
+.concept-box.red h3 { color: var(--accent3); }
+.concept-box.yellow h3 { color: var(--yellow); }
+
+.concept-box p, .concept-box li {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #c9d1d9;
+}
+.concept-box ul { padding-left: 18px; }
+.concept-box li { margin-bottom: 4px; }
+
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #e6edf3;
+}
+.kw { color: #ff7b72; }   /* keywords */
+.ty { color: #ffa657; }   /* types */
+.cm { color: #8b949e; font-style: italic; } /* comments */
+.st { color: #a5d6ff; }   /* strings */
+.fn { color: #d2a8ff; }   /* function names */
+.nm { color: #79c0ff; }   /* numbers/special */
+.cl { color: #ffa657; }   /* class names */
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+@media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.tag-exam { background: rgba(248,166,102,0.15); color: var(--accent5); }
+.tag-imp { background: rgba(248,81,73,0.15); color: #ff7b72; }
+.tag-easy { background: rgba(63,185,80,0.15); color: var(--accent2); }
+
+.tip-box {
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #a5d6ff;
+}
+.tip-box strong { color: var(--accent); }
+
+.warn-box {
+  background: rgba(248,166,102,0.08);
+  border: 1px solid rgba(248,166,102,0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #ffc680;
+}
+
+.table-wrap { overflow-x: auto; margin: 12px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  background: var(--bg3);
+  padding: 9px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: #c9d1d9;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.hero {
+  text-align: center;
+  padding: 40px 0 30px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.hero h2 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 8px;
+}
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 20px;
+}
+.stat { text-align: center; }
+.stat-num { font-size: 24px; font-weight: 700; color: var(--accent); }
+.stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+#mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  width: 48px; height: 48px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #content { padding: 24px 16px 60px; }
+  #mobile-toggle { display: flex; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <h1>C++ OOP Notes</h1>
+    <p>RIUC202B · Galgotias University</p>
+    <input type="text" id="search-input" placeholder="Search topics..." oninput="filterNav(this.value)">
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Basics</div>
+    <a class="nav-item" onclick="goTo('t1')"><span class="nav-dot" style="background:#58a6ff"></span>OOP Introduction</a>
+    <a class="nav-item" onclick="goTo('t2')"><span class="nav-dot" style="background:#58a6ff"></span>Classes & Objects</a>
+    <a class="nav-item" onclick="goTo('t3')"><span class="nav-dot" style="background:#58a6ff"></span>Access Specifiers</a>
+    <a class="nav-item" onclick="goTo('t4')"><span class="nav-dot" style="background:#58a6ff"></span>Methods & Message Passing</a>
+    <a class="nav-item" onclick="goTo('t5')"><span class="nav-dot" style="background:#58a6ff"></span>Abstraction & Encapsulation</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Functions</div>
+    <a class="nav-item" onclick="goTo('t6')"><span class="nav-dot" style="background:#d2a8ff"></span>Default Arguments</a>
+    <a class="nav-item" onclick="goTo('t7')"><span class="nav-dot" style="background:#d2a8ff"></span>Function Overloading</a>
+    <a class="nav-item" onclick="goTo('t8')"><span class="nav-dot" style="background:#d2a8ff"></span>Friend Functions</a>
+    <a class="nav-item" onclick="goTo('t9')"><span class="nav-dot" style="background:#d2a8ff"></span>Static Members</a>
+    <a class="nav-item" onclick="goTo('t10')"><span class="nav-dot" style="background:#d2a8ff"></span>Object Pointers & const</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Classes Deep-Dive</div>
+    <a class="nav-item" onclick="goTo('t11')"><span class="nav-dot" style="background:#3fb950"></span>Nested & Local Classes</a>
+    <a class="nav-item" onclick="goTo('t12')"><span class="nav-dot" style="background:#3fb950"></span>Constructors</a>
+    <a class="nav-item" onclick="goTo('t13')"><span class="nav-dot" style="background:#3fb950"></span>Copy Constructor</a>
+    <a class="nav-item" onclick="goTo('t14')"><span class="nav-dot" style="background:#3fb950"></span>Destructor</a>
+    <a class="nav-item" onclick="goTo('t15')"><span class="nav-dot" style="background:#3fb950"></span>Type Conversion</a>
+    <a class="nav-item" onclick="goTo('t16')"><span class="nav-dot" style="background:#3fb950"></span>Explicit Constructor</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Operators</div>
+    <a class="nav-item" onclick="goTo('t17')"><span class="nav-dot" style="background:#ffa657"></span>Operator Overloading</a>
+    <a class="nav-item" onclick="goTo('t18')"><span class="nav-dot" style="background:#ffa657"></span>Overload via Friend Fn</a>
+    <a class="nav-item" onclick="goTo('t19')"><span class="nav-dot" style="background:#ffa657"></span>Assignment Operator (=)</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Inheritance</div>
+    <a class="nav-item" onclick="goTo('t20')"><span class="nav-dot" style="background:#f78166"></span>Inheritance Basics</a>
+    <a class="nav-item" onclick="goTo('t21')"><span class="nav-dot" style="background:#f78166"></span>Public & Private Inh.</a>
+    <a class="nav-item" onclick="goTo('t22')"><span class="nav-dot" style="background:#f78166"></span>Protected Inheritance</a>
+    <a class="nav-item" onclick="goTo('t23')"><span class="nav-dot" style="background:#f78166"></span>Types of Inheritance</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Polymorphism</div>
+    <a class="nav-item" onclick="goTo('t24')"><span class="nav-dot" style="background:#e3b341"></span>Composite Objects & RT Poly</a>
+    <a class="nav-item" onclick="goTo('t25')"><span class="nav-dot" style="background:#e3b341"></span>Virtual Functions</a>
+    <a class="nav-item" onclick="goTo('t26')"><span class="nav-dot" style="background:#e3b341"></span>Pure Virtual & Abstract</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Advanced</div>
+    <a class="nav-item" onclick="goTo('t27')"><span class="nav-dot" style="background:#79c0ff"></span>Templates</a>
+    <a class="nav-item" onclick="goTo('t28')"><span class="nav-dot" style="background:#79c0ff"></span>Exception Handling</a>
+    <a class="nav-item" onclick="goTo('t29')"><span class="nav-dot" style="background:#79c0ff"></span>Exception Specification</a>
+    <a class="nav-item" onclick="goTo('t30')"><span class="nav-dot" style="background:#79c0ff"></span>Namespaces</a>
+    <a class="nav-item" onclick="goTo('t31')"><span class="nav-dot" style="background:#79c0ff"></span>Streams & Formatted I/O</a>
+    <a class="nav-item" onclick="goTo('t32')"><span class="nav-dot" style="background:#79c0ff"></span>File Handling</a>
+    <a class="nav-item" onclick="goTo('t33')"><span class="nav-dot" style="background:#79c0ff"></span>STL & Modern C++</a>
+  </div>
+</nav>
+
+<div id="main">
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <div id="content">
+
+    <div class="hero">
+      <h2>C++ OOP — Complete Study Notes</h2>
+      <p>Built from your lecture slides · Study everything from scratch · Score full marks</p>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num">33</div><div class="stat-lbl">Topics</div></div>
+        <div class="stat"><div class="stat-num">40+</div><div class="stat-lbl">Code Examples</div></div>
+        <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Your Potential</div></div>
+      </div>
+    </div>
+
+<!-- ===== T1: OOP INTRO ===== -->
+<div class="topic-card" id="t1">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(88,166,255,0.15);color:#58a6ff">L01</span>
+      <div><div class="topic-title">Introduction to OOP</div><div class="topic-subtitle">What is OOP and why use it</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-easy">Easy</span><span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>What is OOP?</h3>
+      <p>Object-Oriented Programming (OOP) is a programming model that organizes software design around <strong>data (objects)</strong> rather than functions and logic. It partitions data into two memory areas: <em>data</em> and <em>functions</em>.</p>
+    </div>
+    <div class="two-col">
+      <div class="concept-box green">
+        <h3>Advantages of OOP</h3>
+        <ul>
+          <li>Faster and easier to execute</li>
+          <li>Clear structure for programs</li>
+          <li>DRY — Don't Repeat Yourself</li>
+          <li>Reusable code, shorter development time</li>
+          <li>Easier to maintain and debug</li>
+        </ul>
+      </div>
+      <div class="concept-box purple">
+        <h3>OOP vs Procedural</h3>
+        <ul>
+          <li>OOP: data is central</li>
+          <li>Procedural: functions are central</li>
+          <li>OOP supports real-world modelling</li>
+          <li>OOP = modular, scalable</li>
+        </ul>
+      </div>
+    </div>
+    <div class="concept-box orange">
+      <h3>4 Pillars of OOP</h3>
+      <ul>
+        <li><strong>Encapsulation</strong> — binding data + functions into a class</li>
+        <li><strong>Abstraction</strong> — showing only what's necessary, hiding complexity</li>
+        <li><strong>Inheritance</strong> — child class gets properties of parent class</li>
+        <li><strong>Polymorphism</strong> — same interface, different behavior</li>
+      </ul>
+    </div>
+    <div class="tip-box"><strong>Exam tip:</strong> Always remember the 4 pillars with the acronym <strong>AEIP</strong>. Be ready to define each one and give a real-world example.</div>
+  </div>
+</div>
+
+<!-- ===== T2: CLASSES & OBJECTS ===== -->
+<div class="topic-card" id="t2">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(88,166,255,0.15);color:#58a6ff">L01</span>
+      <div><div class="topic-title">Classes & Objects</div><div class="topic-subtitle">Blueprint vs Instance</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span>
+    <div class="two-col">
+      <div class="concept-box">
+        <h3>Class</h3>
+        <p>A class is a <strong>blueprint or template</strong> used to create objects. It defines what data (attributes) and actions (functions) an object will have.</p>
+        <p style="margin-top:8px;font-size:12px;color:var(--muted)">Example: <em>Car</em> is a class. All cars share wheels, speed, mileage.</p>
+      </div>
+      <div class="concept-box green">
+        <h3>Object</h3>
+        <p>An object is an <strong>instance of a class</strong>. When a class is defined, no memory is allocated. Memory is allocated only when an object is created.</p>
+        <p style="margin-top:8px;font-size:12px;color:var(--muted)">Example: <em>myCar</em> is an object of class Car.</p>
+      </div>
+    </div>
+    <div class="section-label">Object Properties</div>
+    <div class="concept-box purple">
+      <h3>3 Properties of an Object</h3>
+      <ul>
+        <li><strong>State</strong> — represented by attributes (e.g., color, speed)</li>
+        <li><strong>Behavior</strong> — represented by methods (e.g., drive(), stop())</li>
+        <li><strong>Identity</strong> — unique name to interact with other objects</li>
+      </ul>
+    </div>
+    <div class="section-label">Syntax</div>
+<pre><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    <span class="ty">string</span> name;
+    <span class="ty">int</span> rollNo;
+
+    <span class="ty">void</span> <span class="fn">display</span>() {
+        cout &lt;&lt; name &lt;&lt; <span class="st">" "</span> &lt;&lt; rollNo;
+    }
+};
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="cl">Student</span> s1;       <span class="cm">// object created</span>
+    s1.name = <span class="st">"Aditya"</span>;
+    s1.rollNo = <span class="nm">228</span>;
+    s1.<span class="fn">display</span>();      <span class="cm">// Output: Aditya 228</span>
+}</pre>
+    <div class="tip-box"><strong>Key rule:</strong> Class = blueprint (no memory). Object = instance (memory allocated). One class → unlimited objects.</div>
+  </div>
+</div>
+
+<!-- ===== T3: ACCESS SPECIFIERS ===== -->
+<div class="topic-card" id="t3">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(88,166,255,0.15);color:#58a6ff">L04</span>
+      <div><div class="topic-title">Access Specifiers</div><div class="topic-subtitle">public, private, protected</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span><span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>What are Access Specifiers?</h3>
+      <p>Access specifiers control <strong>who can access</strong> the members (data/functions) of a class. They enforce data hiding and encapsulation.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Specifier</th><th>Same Class</th><th>Outside Class</th><th>Derived Class</th></tr>
+        <tr><td><strong style="color:var(--accent2)">public</strong></td><td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:var(--accent3)">private</strong></td><td>✅ Yes</td><td>❌ No</td><td>❌ No</td></tr>
+        <tr><td><strong style="color:var(--yellow)">protected</strong></td><td>✅ Yes</td><td>❌ No</td><td>✅ Yes</td></tr>
+      </table>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">BankAccount</span> {
+<span class="kw">private</span>:
+    <span class="ty">double</span> balance;    <span class="cm">// cannot access from outside</span>
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">deposit</span>(<span class="ty">double</span> amt) { balance += amt; }
+    <span class="ty">double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
+};</pre>
+    <div class="warn-box">⚠️ Default access in a class is <strong>private</strong>. Default in a struct is <strong>public</strong>.</div>
+    <div class="tip-box"><strong>Exam tip:</strong> "protected = private to outside world, but visible to child classes." This one liner is key!</div>
+  </div>
+</div>
+
+<!-- ===== T4: METHODS & MESSAGE PASSING ===== -->
+<div class="topic-card" id="t4">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(88,166,255,0.15);color:#58a6ff">L02</span>
+      <div><div class="topic-title">Methods & Message Passing</div><div class="topic-subtitle">Functions inside classes, object communication</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Methods</h3>
+      <p>Methods are <strong>functions that belong to a class</strong>. They define the behavior of objects. Can be defined inside or outside the class.</p>
+    </div>
+    <div class="concept-box green">
+      <h3>Message Passing</h3>
+      <p>Objects communicate with each other by calling each other's methods. This is called <strong>message passing</strong>. When you write <code>obj.method()</code>, you're sending a message to the object.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Fan</span> {
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">turnOn</span>()  { cout &lt;&lt; <span class="st">"Fan is ON"</span>; }
+    <span class="ty">void</span> <span class="fn">turnOff</span>() { cout &lt;&lt; <span class="st">"Fan is OFF"</span>; }
+};
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="cl">Fan</span> f1;
+    f1.<span class="fn">turnOn</span>();   <span class="cm">// Message: f1, please turn on</span>
+}</pre>
+    <div class="section-label">Outside class definition</div>
+<pre><span class="kw">class</span> <span class="cl">MyClass</span> {
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">show</span>();   <span class="cm">// declaration</span>
+};
+
+<span class="ty">void</span> <span class="cl">MyClass</span>::<span class="fn">show</span>() {   <span class="cm">// definition outside</span>
+    cout &lt;&lt; <span class="st">"Hello!"</span>;
+}</pre>
+    <div class="tip-box"><strong>Real-life:</strong> Pressing elevator button = message passing. The elevator (object) responds to your request (message).</div>
+  </div>
+</div>
+
+<!-- ===== T5: ABSTRACTION & ENCAPSULATION ===== -->
+<div class="topic-card" id="t5">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(88,166,255,0.15);color:#58a6ff">L02</span>
+      <div><div class="topic-title">Abstraction & Encapsulation</div><div class="topic-subtitle">Hiding complexity, binding data</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span>
+    <div class="two-col">
+      <div class="concept-box">
+        <h3>Abstraction</h3>
+        <p>Showing <strong>only essential features</strong>, hiding internal details. Users see <em>what</em> something does, not <em>how</em>.</p>
+        <p style="margin-top:8px">Example: You drive a car without knowing engine internals.</p>
+        <p style="margin-top:4px">Implemented via: <strong>abstract classes &amp; interfaces</strong></p>
+      </div>
+      <div class="concept-box green">
+        <h3>Encapsulation</h3>
+        <p>Wrapping <strong>data + functions into a single unit</strong> (class). Prevents direct access to data. Access is via methods only.</p>
+        <p style="margin-top:8px">Implemented via: <strong>access specifiers (private)</strong></p>
+      </div>
+    </div>
+    <div class="concept-box yellow">
+      <h3>Key Difference</h3>
+      <ul>
+        <li>Abstraction → hides <em>complexity</em> (design-level)</li>
+        <li>Encapsulation → binds <em>data</em> (implementation-level)</li>
+        <li>Abstraction: "What can you do?"</li>
+        <li>Encapsulation: "How is your data protected?"</li>
+      </ul>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">ATM</span> {
+<span class="kw">private</span>:
+    <span class="ty">double</span> balance = <span class="nm">5000</span>;   <span class="cm">// encapsulated (hidden)</span>
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">withdraw</span>(<span class="ty">double</span> amt) {    <span class="cm">// abstracted interface</span>
+        <span class="kw">if</span>(amt &lt;= balance) balance -= amt;
+        <span class="kw">else</span> cout &lt;&lt; <span class="st">"Insufficient funds"</span>;
+    }
+}; <span class="cm">// User sees withdraw(), NOT balance variable</span></pre>
+  </div>
+</div>
+
+<!-- ===== T6: DEFAULT ARGUMENTS ===== -->
+<div class="topic-card" id="t6">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(210,168,255,0.15);color:#d2a8ff">L05</span>
+      <div><div class="topic-title">Default Arguments</div><div class="topic-subtitle">Pre-set parameter values</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>What are Default Arguments?</h3>
+      <p>Default arguments are values provided in function declaration that are used when no argument is passed by the caller.</p>
+    </div>
+<pre><span class="ty">void</span> <span class="fn">greet</span>(<span class="ty">string</span> name = <span class="st">"Guest"</span>) {
+    cout &lt;&lt; <span class="st">"Hello, "</span> &lt;&lt; name;
+}
+<span class="fn">greet</span>();           <span class="cm">// Output: Hello, Guest</span>
+<span class="fn">greet</span>(<span class="st">"Aditya"</span>);  <span class="cm">// Output: Hello, Aditya</span></pre>
+    <div class="concept-box orange">
+      <h3>Rules</h3>
+      <ul>
+        <li>Default arguments must be at the <strong>right end</strong> of parameter list</li>
+        <li>Once default is given, all following params must have defaults too</li>
+        <li>Cannot have default in both declaration and definition</li>
+      </ul>
+    </div>
+<pre><span class="ty">void</span> <span class="fn">f</span>(<span class="ty">int</span> a = <span class="nm">10</span>) { cout &lt;&lt; a; }
+<span class="fn">f</span>();    <span class="cm">// 10</span>
+<span class="fn">f</span>(<span class="nm">221</span>); <span class="cm">// 221</span></pre>
+  </div>
+</div>
+
+<!-- ===== T7: FUNCTION OVERLOADING ===== -->
+<div class="topic-card" id="t7">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(210,168,255,0.15);color:#d2a8ff">L06</span>
+      <div><div class="topic-title">Function Overloading</div><div class="topic-subtitle">Same name, different parameters</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span>
+    <div class="concept-box">
+      <h3>Definition</h3>
+      <p>Function overloading allows <strong>multiple functions with the same name</strong> but different parameters (number, type, or order). The compiler picks the right one based on arguments — this is <strong>compile-time polymorphism</strong>.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Calculator</span> {
+<span class="kw">public</span>:
+    <span class="ty">int</span>    <span class="fn">add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b)              { <span class="kw">return</span> a + b; }
+    <span class="ty">double</span> <span class="fn">add</span>(<span class="ty">double</span> a, <span class="ty">double</span> b)        { <span class="kw">return</span> a + b; }
+    <span class="ty">int</span>    <span class="fn">add</span>(<span class="ty">int</span> a, <span class="ty">int</span> b, <span class="ty">int</span> c)       { <span class="kw">return</span> a+b+c; }
+};
+
+<span class="cl">Calculator</span> calc;
+calc.<span class="fn">add</span>(<span class="nm">5</span>, <span class="nm">3</span>);          <span class="cm">// → int version</span>
+calc.<span class="fn">add</span>(<span class="nm">2.5</span>, <span class="nm">3.5</span>);     <span class="cm">// → double version</span>
+calc.<span class="fn">add</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>);      <span class="cm">// → 3-param version</span></pre>
+    <div class="warn-box">⚠️ You <strong>cannot</strong> overload by return type alone. The parameter list must differ.</div>
+    <div class="tip-box"><strong>Exam:</strong> Overloading = compile-time polymorphism = early binding. Overriding = runtime polymorphism = late binding.</div>
+  </div>
+</div>
+
+<!-- ===== T8: FRIEND FUNCTIONS ===== -->
+<div class="topic-card" id="t8">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(210,168,255,0.15);color:#d2a8ff">L06</span>
+      <div><div class="topic-title">Friend Functions</div><div class="topic-subtitle">Non-member with private access</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>What is a Friend Function?</h3>
+      <p>A friend function is <strong>not a member</strong> of the class but is declared inside the class with the <code>friend</code> keyword. It can access <strong>private and protected</strong> members of the class.</p>
+    </div>
+    <div class="concept-box orange">
+      <h3>Why Use Friend Functions?</h3>
+      <ul>
+        <li>Access private data without being a class member</li>
+        <li>Useful when two classes need to share data</li>
+        <li>Used in operator overloading (e.g., stream operators)</li>
+      </ul>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Box</span> {
+<span class="kw">private</span>:
+    <span class="ty">int</span> length = <span class="nm">10</span>;
+<span class="kw">public</span>:
+    <span class="kw">friend</span> <span class="ty">void</span> <span class="fn">showLength</span>(<span class="cl">Box</span> b);  <span class="cm">// friend declaration</span>
+};
+
+<span class="ty">void</span> <span class="fn">showLength</span>(<span class="cl">Box</span> b) {          <span class="cm">// NOT a member, but can access private</span>
+    cout &lt;&lt; <span class="st">"Length: "</span> &lt;&lt; b.length;
+}
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="cl">Box</span> b1;
+    <span class="fn">showLength</span>(b1);  <span class="cm">// Output: Length: 10</span>
+}</pre>
+    <div class="warn-box">⚠️ Friend functions break encapsulation slightly. Use only when necessary.</div>
+  </div>
+</div>
+
+<!-- ===== T9: STATIC MEMBERS ===== -->
+<div class="topic-card" id="t9">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(210,168,255,0.15);color:#d2a8ff">L08</span>
+      <div><div class="topic-title">Static Members</div><div class="topic-subtitle">Class-level data shared by all objects</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span>
+    <div class="two-col">
+      <div class="concept-box">
+        <h3>Static Data Member</h3>
+        <ul>
+          <li>Belongs to the <strong>class</strong>, not objects</li>
+          <li>Shared by all objects (one memory copy)</li>
+          <li>Declared with <code>static</code> keyword</li>
+          <li>Defined <strong>outside</strong> class</li>
+        </ul>
+      </div>
+      <div class="concept-box green">
+        <h3>Static Function</h3>
+        <ul>
+          <li>Can only access <strong>static members</strong></li>
+          <li>No <code>this</code> pointer</li>
+          <li>Called via <code>ClassName::func()</code></li>
+          <li>No object required</li>
+        </ul>
+      </div>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    <span class="kw">static</span> <span class="ty">int</span> count;       <span class="cm">// declaration</span>
+    <span class="cl">Student</span>() { count++; }
+    <span class="kw">static</span> <span class="ty">int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+};
+<span class="ty">int</span> <span class="cl">Student</span>::count = <span class="nm">0</span>;   <span class="cm">// definition outside class</span>
+
+<span class="cl">Student</span> s1, s2, s3;
+cout &lt;&lt; <span class="cl">Student</span>::<span class="fn">getCount</span>();  <span class="cm">// Output: 3</span></pre>
+    <div class="tip-box"><strong>Use case:</strong> Counting objects created, storing constants shared by all, factory methods.</div>
+  </div>
+</div>
+
+<!-- ===== T10: OBJECT POINTERS & CONST ===== -->
+<div class="topic-card" id="t10">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(210,168,255,0.15);color:#d2a8ff">L09/10</span>
+      <div><div class="topic-title">Object Pointers & Constant Objects</div><div class="topic-subtitle">Pointer to object, const object rules</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Object Pointer</h3>
+      <p>A pointer that stores the address of an object. Use <code>-&gt;</code> to access members via pointer.</p>
+    </div>
+<pre><span class="cl">Student</span> s1;
+<span class="cl">Student</span>* ptr = &amp;s1;   <span class="cm">// pointer to object</span>
+ptr-&gt;<span class="fn">display</span>();       <span class="cm">// access via arrow operator</span>
+(*ptr).<span class="fn">display</span>();     <span class="cm">// same as above</span></pre>
+    <div class="concept-box green">
+      <h3>Constant Object</h3>
+      <p>A <code>const</code> object cannot have its data modified. It can only call <code>const</code> member functions.</p>
+    </div>
+<pre><span class="kw">const</span> <span class="cl">Student</span> s2;     <span class="cm">// constant object</span>
+s2.<span class="fn">display</span>();        <span class="cm">// only const functions can be called</span>
+
+<span class="cm">// const member function — cannot modify data:</span>
+<span class="ty">void</span> <span class="fn">display</span>() <span class="kw">const</span> { cout &lt;&lt; name; }</pre>
+  </div>
+</div>
+
+<!-- ===== T11: NESTED & LOCAL CLASSES ===== -->
+<div class="topic-card" id="t11">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L11</span>
+      <div><div class="topic-title">Nested & Local Classes</div><div class="topic-subtitle">Class inside class / class inside function</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="two-col">
+      <div class="concept-box">
+        <h3>Nested Class</h3>
+        <p>A class declared <strong>inside another class</strong>. Accessed using scope resolution: <code>Outer::Inner</code></p>
+      </div>
+      <div class="concept-box green">
+        <h3>Local Class</h3>
+        <p>A class declared <strong>inside a function</strong>. Its scope is limited to that function only.</p>
+      </div>
+    </div>
+<pre><span class="cm">// Nested Class</span>
+<span class="kw">class</span> <span class="cl">Outer</span> {
+<span class="kw">public</span>:
+    <span class="kw">class</span> <span class="cl">Inner</span> {
+    <span class="kw">public</span>:
+        <span class="ty">void</span> <span class="fn">show</span>() { cout &lt;&lt; <span class="st">"Inner class"</span>; }
+    };
+};
+
+<span class="cl">Outer</span>::<span class="cl">Inner</span> obj;
+obj.<span class="fn">show</span>();   <span class="cm">// Output: Inner class</span></pre>
+<pre><span class="cm">// Local Class</span>
+<span class="ty">void</span> <span class="fn">myFunction</span>() {
+    <span class="kw">class</span> <span class="cl">Local</span> {
+    <span class="kw">public</span>:
+        <span class="ty">void</span> <span class="fn">display</span>() { cout &lt;&lt; <span class="st">"Local class"</span>; }
+    };
+    <span class="cl">Local</span> l;
+    l.<span class="fn">display</span>();
+}</pre>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Nested Class</th><th>Local Class</th></tr>
+      <tr><td>Defined inside</td><td>Another class</td><td>A function</td></tr>
+      <tr><td>Accessed via</td><td>Outer::Inner</td><td>Inside function only</td></tr>
+      <tr><td>Scope</td><td>Class scope</td><td>Function scope</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== T12: CONSTRUCTORS ===== -->
+<div class="topic-card" id="t12">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L12/13</span>
+      <div><div class="topic-title">Constructors</div><div class="topic-subtitle">Default, Parameterized, Dynamic</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span><span class="tag tag-exam">Always in Exam</span>
+    <div class="concept-box">
+      <h3>What is a Constructor?</h3>
+      <p>A constructor is a <strong>special member function</strong> that is <strong>automatically called when an object is created</strong>. Same name as class, no return type.</p>
+    </div>
+    <div class="section-label">Type 1 — Default Constructor</div>
+<pre><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    <span class="ty">string</span> name;
+    <span class="ty">int</span> roll;
+    <span class="cl">Student</span>() {               <span class="cm">// default constructor</span>
+        name = <span class="st">"Unknown"</span>;
+        roll = <span class="nm">0</span>;
+    }
+};</pre>
+    <div class="section-label">Type 2 — Parameterized Constructor</div>
+<pre><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    <span class="ty">string</span> name;
+    <span class="ty">int</span> roll;
+    <span class="cl">Student</span>(<span class="ty">string</span> n, <span class="ty">int</span> r) {  <span class="cm">// parameterized constructor</span>
+        name = n;
+        roll = r;
+    }
+};
+<span class="cl">Student</span> s1(<span class="st">"Aditya"</span>, <span class="nm">228</span>);  <span class="cm">// pass values at creation</span></pre>
+    <div class="section-label">Type 3 — Constructor with Dynamic Allocation</div>
+<pre><span class="kw">class</span> <span class="cl">Array</span> {
+<span class="kw">public</span>:
+    <span class="ty">int</span>* data;
+    <span class="ty">int</span> size;
+    <span class="cl">Array</span>(<span class="ty">int</span> n) {
+        size = n;
+        data = <span class="kw">new</span> <span class="ty">int</span>[n];   <span class="cm">// dynamic memory</span>
+    }
+};</pre>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Parameters</th><th>Use</th></tr>
+      <tr><td>Default</td><td>None</td><td>Assign default values</td></tr>
+      <tr><td>Parameterized</td><td>Arguments</td><td>Init with custom values</td></tr>
+      <tr><td>Dynamic</td><td>Arguments</td><td>Allocate heap memory</td></tr>
+    </table></div>
+    <div class="tip-box"><strong>Key rules:</strong> Same name as class · No return type · Auto-called on object creation · Can be overloaded</div>
+  </div>
+</div>
+
+<!-- ===== T13: COPY CONSTRUCTOR ===== -->
+<div class="topic-card" id="t13">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L14</span>
+      <div><div class="topic-title">Copy Constructor</div><div class="topic-subtitle">Clone an object from another</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span>
+    <div class="concept-box">
+      <h3>What is Copy Constructor?</h3>
+      <p>A copy constructor <strong>initializes a new object using an existing object</strong> of the same class. It creates a copy (like a photocopy of a document).</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    <span class="ty">string</span> name;
+    <span class="ty">int</span> roll;
+    <span class="cl">Student</span>(<span class="ty">string</span> n, <span class="ty">int</span> r) { name=n; roll=r; }
+    <span class="cl">Student</span>(<span class="kw">const</span> <span class="cl">Student</span>&amp; s) {   <span class="cm">// copy constructor</span>
+        name = s.name;
+        roll = s.roll;
+    }
+};
+
+<span class="cl">Student</span> s1(<span class="st">"Aditya"</span>, <span class="nm">228</span>);
+<span class="cl">Student</span> s2(s1);   <span class="cm">// copy constructor called</span>
+<span class="cl">Student</span> s3 = s1;  <span class="cm">// also calls copy constructor</span></pre>
+    <div class="two-col">
+      <div class="concept-box orange">
+        <h3>Shallow Copy</h3>
+        <p>Copies pointer values (address). Both objects point to the <strong>same memory</strong>. Dangerous — deleting one breaks the other.</p>
+      </div>
+      <div class="concept-box green">
+        <h3>Deep Copy</h3>
+        <p>Creates a <strong>new memory block</strong> and copies actual values. Safe for dynamic memory. Must write manually.</p>
+      </div>
+    </div>
+    <div class="tip-box"><strong>Signature:</strong> <code>ClassName(const ClassName&amp; obj)</code> — always pass by reference to avoid infinite recursion!</div>
+  </div>
+</div>
+
+<!-- ===== T14: DESTRUCTOR ===== -->
+<div class="topic-card" id="t14">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L15</span>
+      <div><div class="topic-title">Destructor</div><div class="topic-subtitle">Auto-cleanup when object is destroyed</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>What is a Destructor?</h3>
+      <p>A destructor is a <strong>special member function auto-called when an object goes out of scope or is deleted</strong>. It releases resources (memory, files, sockets). Syntax: <code>~ClassName()</code></p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">FileLogger</span> {
+<span class="kw">public</span>:
+    <span class="cl">FileLogger</span>()  { cout &lt;&lt; <span class="st">"File opened"</span>; }
+    ~<span class="cl">FileLogger</span>() { cout &lt;&lt; <span class="st">"File closed"</span>; }  <span class="cm">// destructor</span>
+};
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="cl">FileLogger</span> f;   <span class="cm">// constructor called</span>
+}                  <span class="cm">// destructor called automatically at end</span></pre>
+    <div class="concept-box orange">
+      <h3>Rules</h3>
+      <ul>
+        <li>Same name as class, prefixed with <code>~</code></li>
+        <li>No return type, no parameters</li>
+        <li>Cannot be overloaded — only one per class</li>
+        <li>Called in <strong>reverse order</strong> of construction</li>
+      </ul>
+    </div>
+    <div class="tip-box"><strong>Analogy:</strong> When you leave a lab, you switch off lights and lock — that's what a destructor does for your object!</div>
+  </div>
+</div>
+
+<!-- ===== T15: TYPE CONVERSION ===== -->
+<div class="topic-card" id="t15">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L19</span>
+      <div><div class="topic-title">Type Conversion</div><div class="topic-subtitle">Implicit & explicit casting</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="two-col">
+      <div class="concept-box">
+        <h3>Implicit (Auto)</h3>
+        <p>Compiler converts automatically. Happens for compatible types. <strong>Widening</strong> (small→large) is safe. <strong>Narrowing</strong> (large→small) may lose data.</p>
+      </div>
+      <div class="concept-box orange">
+        <h3>Explicit (Type Cast)</h3>
+        <p>Programmer forces the conversion. Use when compiler won't do it automatically, or when precision matters.</p>
+      </div>
+    </div>
+<pre><span class="cm">// Implicit</span>
+<span class="ty">int</span> a = <span class="nm">5</span>;
+<span class="ty">double</span> b = a;     <span class="cm">// int → double (safe)</span>
+<span class="ty">double</span> x = <span class="nm">9.8</span>;
+<span class="ty">int</span> y = x;        <span class="cm">// double → int (9), fractional lost!</span>
+
+<span class="cm">// C-style cast (old)</span>
+<span class="ty">int</span> z = (<span class="ty">int</span>)<span class="nm">9.8</span>;   <span class="cm">// z = 9</span>
+
+<span class="cm">// static_cast (modern, preferred)</span>
+<span class="ty">double</span> avg = <span class="kw">static_cast</span>&lt;<span class="ty">double</span>&gt;(<span class="nm">7</span>) / <span class="nm">2</span>;  <span class="cm">// 3.5 not 3</span>
+
+<span class="cm">// dynamic_cast (for polymorphism)</span>
+<span class="cl">Base</span>* ptr = <span class="kw">new</span> <span class="cl">Derived</span>();
+<span class="cl">Derived</span>* d = <span class="kw">dynamic_cast</span>&lt;<span class="cl">Derived</span>*&gt;(ptr);</pre>
+    <div class="table-wrap"><table>
+      <tr><th>Cast</th><th>Use</th><th>Safe?</th></tr>
+      <tr><td>Implicit</td><td>Auto by compiler</td><td>Mostly</td></tr>
+      <tr><td>(type) C-style</td><td>Old method</td><td>Not type-safe</td></tr>
+      <tr><td>static_cast</td><td>Numeric conversions</td><td>Yes</td></tr>
+      <tr><td>dynamic_cast</td><td>Polymorphism downcast</td><td>Runtime check</td></tr>
+      <tr><td>const_cast</td><td>Remove const</td><td>Use carefully</td></tr>
+      <tr><td>reinterpret_cast</td><td>Bitwise reinterpret</td><td>Risky</td></tr>
+    </table></div>
+    <div class="tip-box"><strong>Common exam Q:</strong> Why is <code>7/2 = 3</code> and not 3.5? → Integer division. Fix: <code>static_cast&lt;double&gt;(7)/2</code></div>
+  </div>
+</div>
+
+<!-- ===== T16: EXPLICIT CONSTRUCTOR ===== -->
+<div class="topic-card" id="t16">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(63,185,80,0.15);color:#3fb950">L20</span>
+      <div><div class="topic-title">Explicit Constructor</div><div class="topic-subtitle">Prevent unintended implicit conversion</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Problem it Solves</h3>
+      <p>By default, a single-parameter constructor can be used for <strong>implicit conversion</strong>. This can cause unexpected object creation. The <code>explicit</code> keyword prevents this.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Distance</span> {
+    <span class="ty">int</span> meters;
+<span class="kw">public</span>:
+    <span class="kw">explicit</span> <span class="cl">Distance</span>(<span class="ty">int</span> m) { meters = m; }
+};
+
+<span class="ty">void</span> <span class="fn">print</span>(<span class="cl">Distance</span> d) { <span class="cm">/* ... */</span> }
+
+<span class="fn">print</span>(<span class="nm">10</span>);          <span class="cm">// ❌ Error if explicit — no implicit conv</span>
+<span class="fn">print</span>(<span class="cl">Distance</span>(<span class="nm">10</span>)); <span class="cm">// ✅ Explicit is fine</span></pre>
+    <div class="tip-box"><strong>Use explicit</strong> whenever you don't want the compiler to automatically create objects from plain values.</div>
+  </div>
+</div>
+
+<!-- ===== T17: OPERATOR OVERLOADING ===== -->
+<div class="topic-card" id="t17">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(255,166,87,0.15);color:#ffa657">L16</span>
+      <div><div class="topic-title">Operator Overloading</div><div class="topic-subtitle">Redefine operators for user types</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span><span class="tag tag-exam">Always in Exam</span>
+    <div class="concept-box">
+      <h3>What is Operator Overloading?</h3>
+      <p>Operator overloading allows existing operators (+, -, &lt;&lt;, &gt;&gt;) to work with <strong>user-defined types (objects)</strong>. It is a form of <strong>compile-time polymorphism</strong>.</p>
+    </div>
+    <div class="concept-box orange">
+      <h3>Syntax</h3>
+      <p><code>return_type operator symbol (parameters)</code></p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Complex</span> {
+<span class="kw">public</span>:
+    <span class="ty">int</span> real, imag;
+    <span class="cl">Complex</span>(<span class="ty">int</span> r=<span class="nm">0</span>, <span class="ty">int</span> i=<span class="nm">0</span>) { real=r; imag=i; }
+
+    <span class="cl">Complex</span> <span class="kw">operator</span>+(<span class="cl">Complex</span> c) {  <span class="cm">// overloading +</span>
+        <span class="kw">return</span> <span class="cl">Complex</span>(real + c.real, imag + c.imag);
+    }
+    <span class="ty">void</span> <span class="fn">display</span>() { cout &lt;&lt; real &lt;&lt; <span class="st">"+"</span> &lt;&lt; imag &lt;&lt; <span class="st">"i"</span>; }
+};
+
+<span class="cl">Complex</span> c1(<span class="nm">3</span>,<span class="nm">4</span>), c2(<span class="nm">1</span>,<span class="nm">2</span>);
+<span class="cl">Complex</span> c3 = c1 + c2;   <span class="cm">// calls operator+</span>
+c3.<span class="fn">display</span>();           <span class="cm">// Output: 4+6i</span></pre>
+    <div class="concept-box red">
+      <h3>Cannot Overload</h3>
+      <ul>
+        <li><code>::</code> scope resolution</li>
+        <li><code>.</code> dot operator</li>
+        <li><code>.*</code> pointer to member</li>
+        <li><code>?:</code> ternary operator</li>
+        <li><code>sizeof</code></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== T18: OVERLOAD VIA FRIEND ===== -->
+<div class="topic-card" id="t18">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(255,166,87,0.15);color:#ffa657">L17</span>
+      <div><div class="topic-title">Operator Overloading via Friend Function</div><div class="topic-subtitle">Non-member operator</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Why Friend for Operators?</h3>
+      <ul>
+        <li>When the operator needs to access <strong>private data</strong> of multiple objects</li>
+        <li>When you don't want to use a member function</li>
+      </ul>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Complex</span> {
+<span class="kw">private</span>:
+    <span class="ty">int</span> real, imag;
+<span class="kw">public</span>:
+    <span class="cl">Complex</span>(<span class="ty">int</span> r=<span class="nm">0</span>, <span class="ty">int</span> i=<span class="nm">0</span>) { real=r; imag=i; }
+    <span class="kw">friend</span> <span class="cl">Complex</span> <span class="kw">operator</span>+(<span class="cl">Complex</span>, <span class="cl">Complex</span>);
+    <span class="ty">void</span> <span class="fn">display</span>() { cout &lt;&lt; real &lt;&lt; <span class="st">"+"</span> &lt;&lt; imag &lt;&lt; <span class="st">"i"</span>; }
+};
+
+<span class="cl">Complex</span> <span class="kw">operator</span>+(<span class="cl">Complex</span> c1, <span class="cl">Complex</span> c2) {
+    <span class="kw">return</span> <span class="cl">Complex</span>(c1.real + c2.real, c1.imag + c2.imag);
+}
+
+<span class="cl">Complex</span> a(<span class="nm">2</span>,<span class="nm">3</span>), b(<span class="nm">1</span>,<span class="nm">4</span>);
+(a + b).<span class="fn">display</span>();   <span class="cm">// 3+7i</span></pre>
+    <div class="tip-box"><strong>Difference:</strong> Member function operator takes 1 param (other object). Friend function operator takes 2 params (both objects).</div>
+  </div>
+</div>
+
+<!-- ===== T19: ASSIGNMENT OPERATOR ===== -->
+<div class="topic-card" id="t19">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(255,166,87,0.15);color:#ffa657">L18</span>
+      <div><div class="topic-title">Assignment Operator Overloading</div><div class="topic-subtitle">Custom deep copy on = assignment</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Why Overload = ?</h3>
+      <p>By default, <code>=</code> does a <strong>shallow copy</strong>. For classes with dynamic memory (pointers), this causes problems. We overload <code>=</code> to do a <strong>deep copy</strong>.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">MyString</span> {
+    <span class="ty">char</span>* data;
+<span class="kw">public</span>:
+    <span class="cm">// Assignment operator overload</span>
+    <span class="cl">MyString</span>&amp; <span class="kw">operator</span>=(<span class="kw">const</span> <span class="cl">MyString</span>&amp; src) {
+        <span class="kw">if</span>(<span class="kw">this</span> == &amp;src) <span class="kw">return</span> *<span class="kw">this</span>;  <span class="cm">// self-assign check</span>
+        <span class="kw">delete</span>[] data;               <span class="cm">// free old memory</span>
+        data = <span class="kw">new</span> <span class="ty">char</span>[strlen(src.data)+<span class="nm">1</span>];
+        strcpy(data, src.data);      <span class="cm">// deep copy</span>
+        <span class="kw">return</span> *<span class="kw">this</span>;
+    }
+};</pre>
+    <div class="warn-box">⚠️ Always check for self-assignment: <code>if(this == &amp;rhs) return *this;</code></div>
+  </div>
+</div>
+
+<!-- ===== T20: INHERITANCE BASICS ===== -->
+<div class="topic-card" id="t20">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(247,129,102,0.15);color:#f78166">L22</span>
+      <div><div class="topic-title">Inheritance Basics</div><div class="topic-subtitle">Code reuse through parent-child classes</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span><span class="tag tag-exam">Always in Exam</span>
+    <div class="concept-box">
+      <h3>What is Inheritance?</h3>
+      <p>Inheritance allows a <strong>derived class (child)</strong> to acquire properties and behaviors of a <strong>base class (parent)</strong>. Promotes code reusability and hierarchical classification.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Animal</span> {             <span class="cm">// Base class</span>
+<span class="kw">public</span>:
+    <span class="ty">string</span> name;
+    <span class="ty">void</span> <span class="fn">eat</span>() { cout &lt;&lt; <span class="st">"Eating"</span>; }
+};
+
+<span class="kw">class</span> <span class="cl">Dog</span> : <span class="kw">public</span> <span class="cl">Animal</span> {  <span class="cm">// Derived class</span>
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">bark</span>() { cout &lt;&lt; <span class="st">"Woof!"</span>; }
+};
+
+<span class="cl">Dog</span> d;
+d.<span class="fn">eat</span>();   <span class="cm">// inherited from Animal</span>
+d.<span class="fn">bark</span>();  <span class="cm">// own method</span></pre>
+    <div class="concept-box purple">
+      <h3>5 Types of Inheritance</h3>
+      <ul>
+        <li><strong>Single</strong> — one base → one derived</li>
+        <li><strong>Multiple</strong> — multiple bases → one derived</li>
+        <li><strong>Multilevel</strong> — A→B→C (chain)</li>
+        <li><strong>Hierarchical</strong> — one base → multiple derived</li>
+        <li><strong>Hybrid</strong> — combination of the above</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== T21: PUBLIC & PRIVATE INHERITANCE ===== -->
+<div class="topic-card" id="t21">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(247,129,102,0.15);color:#f78166">L23</span>
+      <div><div class="topic-title">Public & Private Inheritance</div><div class="topic-subtitle">How access changes in derived class</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span>
+    <div class="table-wrap"><table>
+      <tr><th>Base Member</th><th>Public Inheritance</th><th>Private Inheritance</th></tr>
+      <tr><td>public</td><td>→ public in derived</td><td>→ private in derived</td></tr>
+      <tr><td>protected</td><td>→ protected in derived</td><td>→ private in derived</td></tr>
+      <tr><td>private</td><td>Not inherited (hidden)</td><td>Not inherited (hidden)</td></tr>
+    </table></div>
+<pre><span class="kw">class</span> <span class="cl">Base</span> {
+<span class="kw">public</span>:    <span class="ty">int</span> x = <span class="nm">10</span>;
+<span class="kw">protected</span>: <span class="ty">int</span> y = <span class="nm">20</span>;
+<span class="kw">private</span>:   <span class="ty">int</span> z = <span class="nm">30</span>;
+};
+
+<span class="kw">class</span> <span class="cl">PubDerived</span> : <span class="kw">public</span> <span class="cl">Base</span> {
+    <span class="cm">// x → public, y → protected, z → hidden</span>
+};
+
+<span class="kw">class</span> <span class="cl">PrivDerived</span> : <span class="kw">private</span> <span class="cl">Base</span> {
+    <span class="cm">// x → private, y → private, z → hidden</span>
+};</pre>
+    <div class="tip-box"><strong>Rule of thumb:</strong> Public inheritance = "is-a" relationship. Private inheritance = "implemented-in-terms-of".</div>
+  </div>
+</div>
+
+<!-- ===== T22: PROTECTED INHERITANCE ===== -->
+<div class="topic-card" id="t22">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(247,129,102,0.15);color:#f78166">L24</span>
+      <div><div class="topic-title">Protected Inheritance</div><div class="topic-subtitle">Middle ground access</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="table-wrap"><table>
+      <tr><th>Base Member</th><th>Protected Inheritance Result</th></tr>
+      <tr><td>public</td><td>→ protected in derived</td></tr>
+      <tr><td>protected</td><td>→ protected in derived</td></tr>
+      <tr><td>private</td><td>Not accessible</td></tr>
+    </table></div>
+<pre><span class="kw">class</span> <span class="cl">MedicalRecord</span> {
+<span class="kw">protected</span>:
+    <span class="ty">string</span> diagnosis;  <span class="cm">// visible to derived, not outsiders</span>
+<span class="kw">public</span>:
+    <span class="ty">string</span> patientID;
+};
+
+<span class="kw">class</span> <span class="cl">InPatient</span> : <span class="kw">protected</span> <span class="cl">MedicalRecord</span> {
+    <span class="cm">// both patientID and diagnosis become protected here</span>
+};</pre>
+    <div class="tip-box"><strong>Use case:</strong> When you want derived class to access parent's members, but not allow outsiders to access them through the derived class.</div>
+  </div>
+</div>
+
+<!-- ===== T23: TYPES OF INHERITANCE ===== -->
+<div class="topic-card" id="t23">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(247,129,102,0.15);color:#f78166">L22</span>
+      <div><div class="topic-title">All Types of Inheritance</div><div class="topic-subtitle">Single, Multiple, Multilevel, Hierarchical, Hybrid</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-exam">Diagram Question</span>
+<pre><span class="cm">// Single Inheritance — A → B</span>
+<span class="kw">class</span> <span class="cl">B</span> : <span class="kw">public</span> <span class="cl">A</span> { };</pre>
+<pre><span class="cm">// Multiple Inheritance — A, B → C</span>
+<span class="kw">class</span> <span class="cl">C</span> : <span class="kw">public</span> <span class="cl">A</span>, <span class="kw">public</span> <span class="cl">B</span> { };</pre>
+<pre><span class="cm">// Multilevel — A → B → C</span>
+<span class="kw">class</span> <span class="cl">B</span> : <span class="kw">public</span> <span class="cl">A</span> { };
+<span class="kw">class</span> <span class="cl">C</span> : <span class="kw">public</span> <span class="cl">B</span> { };</pre>
+<pre><span class="cm">// Hierarchical — A → B, A → C</span>
+<span class="kw">class</span> <span class="cl">B</span> : <span class="kw">public</span> <span class="cl">A</span> { };
+<span class="kw">class</span> <span class="cl">C</span> : <span class="kw">public</span> <span class="cl">A</span> { };</pre>
+    <div class="warn-box">⚠️ <strong>Diamond Problem</strong> in Multiple Inheritance: when two bases inherit from same grandbase → ambiguity. Solved using <code>virtual</code> base class.</div>
+  </div>
+</div>
+
+<!-- ===== T24: COMPOSITE OBJECTS & RT POLY ===== -->
+<div class="topic-card" id="t24">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(227,179,65,0.15);color:#e3b341">L27</span>
+      <div><div class="topic-title">Composite Objects & Runtime Polymorphism</div><div class="topic-subtitle">Has-a relationship and dynamic dispatch</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Composite Objects (has-a)</h3>
+      <p>Composition means one class <strong>contains objects of another class</strong> as data members. Represents a <em>"has-a"</em> relationship.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Engine</span> {
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">start</span>() { cout &lt;&lt; <span class="st">"Engine starts"</span>; }
+};
+
+<span class="kw">class</span> <span class="cl">Car</span> {
+    <span class="cl">Engine</span> engine;   <span class="cm">// Car HAS-A Engine</span>
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">drive</span>() { engine.<span class="fn">start</span>(); }
+};</pre>
+    <div class="concept-box green">
+      <h3>Runtime Polymorphism</h3>
+      <p>The correct function is determined at <strong>runtime</strong> based on actual object type, not pointer type. Enabled by <code>virtual</code> functions.</p>
+    </div>
+    <div class="tip-box"><strong>Composition vs Inheritance:</strong> Use "is-a" → Inheritance. Use "has-a" → Composition. Car is NOT an Engine, but Car HAS an Engine.</div>
+  </div>
+</div>
+
+<!-- ===== T25: VIRTUAL FUNCTIONS ===== -->
+<div class="topic-card" id="t25">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(227,179,65,0.15);color:#e3b341">L28</span>
+      <div><div class="topic-title">Virtual Functions</div><div class="topic-subtitle">Runtime polymorphism with pointers</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span><span class="tag tag-exam">Always in Exam</span>
+    <div class="concept-box">
+      <h3>What is a Virtual Function?</h3>
+      <p>A virtual function is a member function that can be <strong>overridden in derived class</strong> and is resolved at <strong>runtime (late binding)</strong>. Declared with <code>virtual</code> keyword.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Base</span> {
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="ty">void</span> <span class="fn">show</span>() { cout &lt;&lt; <span class="st">"Base"</span>; }
+};
+
+<span class="kw">class</span> <span class="cl">Derived</span> : <span class="kw">public</span> <span class="cl">Base</span> {
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">show</span>() <span class="kw">override</span> { cout &lt;&lt; <span class="st">"Derived"</span>; }
+};
+
+<span class="cl">Base</span>* ptr = <span class="kw">new</span> <span class="cl">Derived</span>();
+ptr-&gt;<span class="fn">show</span>();  <span class="cm">// Output: Derived (NOT Base!)</span>
+<span class="cm">// Without virtual → would print "Base"</span></pre>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Normal Function</th><th>Virtual Function</th></tr>
+      <tr><td>Binding</td><td>Compile-time (early)</td><td>Runtime (late)</td></tr>
+      <tr><td>Resolved by</td><td>Pointer type</td><td>Actual object type</td></tr>
+      <tr><td>Keyword</td><td>—</td><td>virtual</td></tr>
+    </table></div>
+    <div class="tip-box"><strong>vTable:</strong> C++ implements virtual functions using a virtual table (vTable). Each class with virtuals has a vTable containing function pointers.</div>
+  </div>
+</div>
+
+<!-- ===== T26: PURE VIRTUAL & ABSTRACT ===== -->
+<div class="topic-card" id="t26">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(227,179,65,0.15);color:#e3b341">L29</span>
+      <div><div class="topic-title">Pure Virtual Functions & Abstract Classes</div><div class="topic-subtitle">Force subclasses to implement</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Very Important</span>
+    <div class="concept-box">
+      <h3>Pure Virtual Function</h3>
+      <p>A virtual function with <strong>no implementation</strong> in base class. Must be overridden in derived class. Declared with <code>= 0</code>.</p>
+    </div>
+    <div class="concept-box purple">
+      <h3>Abstract Class</h3>
+      <p>A class that contains <strong>at least one pure virtual function</strong>. <strong>Cannot create objects</strong> of abstract class. Derived class must implement all pure virtual functions.</p>
+    </div>
+<pre><span class="kw">class</span> <span class="cl">Shape</span> {              <span class="cm">// Abstract class</span>
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="ty">double</span> <span class="fn">area</span>() = <span class="nm">0</span>;  <span class="cm">// pure virtual</span>
+};
+
+<span class="kw">class</span> <span class="cl">Circle</span> : <span class="kw">public</span> <span class="cl">Shape</span> {
+    <span class="ty">double</span> r;
+<span class="kw">public</span>:
+    <span class="cl">Circle</span>(<span class="ty">double</span> radius) { r = radius; }
+    <span class="ty">double</span> <span class="fn">area</span>() <span class="kw">override</span> { <span class="kw">return</span> <span class="nm">3.14</span> * r * r; }
+};
+
+<span class="cm">// Shape s;  ❌ Cannot create — abstract!</span>
+<span class="cl">Circle</span> c(<span class="nm">5</span>);
+cout &lt;&lt; c.<span class="fn">area</span>();   <span class="cm">// ✅ 78.5</span></pre>
+    <div class="tip-box"><strong>Interface Pattern:</strong> A class with only pure virtual functions acts as an interface. All derived classes are forced to implement all methods.</div>
+  </div>
+</div>
+
+<!-- ===== T27: TEMPLATES ===== -->
+<div class="topic-card" id="t27">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L32/35</span>
+      <div><div class="topic-title">Templates</div><div class="topic-subtitle">Generic programming — one code, all types</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span>
+    <div class="concept-box">
+      <h3>What are Templates?</h3>
+      <p>Templates allow writing <strong>generic code</strong> that works with different data types using a single function or class. Like a blueprint — same design, different materials.</p>
+    </div>
+    <div class="section-label">Function Template</div>
+<pre><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+T <span class="fn">add</span>(T a, T b) {
+    <span class="kw">return</span> a + b;
+}
+
+cout &lt;&lt; <span class="fn">add</span>(<span class="nm">5</span>, <span class="nm">10</span>);       <span class="cm">// int: 15</span>
+cout &lt;&lt; <span class="fn">add</span>(<span class="nm">2.5</span>, <span class="nm">3.1</span>);   <span class="cm">// double: 5.6</span>
+cout &lt;&lt; <span class="fn">add</span>(<span class="nm">1</span>, <span class="nm">2</span>);        <span class="cm">// int: 3</span></pre>
+    <div class="section-label">Class Template</div>
+<pre><span class="kw">template</span> &lt;<span class="kw">typename</span> T&gt;
+<span class="kw">class</span> <span class="cl">Stack</span> {
+    T data[<span class="nm">100</span>];
+    <span class="ty">int</span> top = <span class="nm">-1</span>;
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(T val) { data[++top] = val; }
+    T <span class="fn">pop</span>()          { <span class="kw">return</span> data[top--]; }
+};
+
+<span class="cl">Stack</span>&lt;<span class="ty">int</span>&gt;    intStack;
+<span class="cl">Stack</span>&lt;<span class="ty">string</span>&gt; strStack;</pre>
+    <div class="concept-box orange">
+      <h3>Down Casting & Cross Casting</h3>
+      <ul>
+        <li><strong>Upcasting</strong> — Derived* → Base* (always safe)</li>
+        <li><strong>Downcasting</strong> — Base* → Derived* (use dynamic_cast)</li>
+        <li><strong>Cross Casting</strong> — between sibling classes in multiple inheritance (use dynamic_cast)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ===== T28: EXCEPTION HANDLING ===== -->
+<div class="topic-card" id="t28">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L33</span>
+      <div><div class="topic-title">Exception Handling</div><div class="topic-subtitle">Handle runtime errors without crashing</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-imp">Important</span><span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>What is Exception Handling?</h3>
+      <p>A mechanism to handle <strong>runtime errors</strong> (like divide by zero, file not found) without crashing. Uses <code>try</code>, <code>throw</code>, <code>catch</code>.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <tr><th>Keyword</th><th>Purpose</th></tr>
+      <tr><td><code>try</code></td><td>Block of code that may cause exception</td></tr>
+      <tr><td><code>throw</code></td><td>Signals that an exception occurred</td></tr>
+      <tr><td><code>catch</code></td><td>Handles the exception</td></tr>
+    </table></div>
+<pre><span class="ty">int</span> <span class="fn">divide</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) {
+    <span class="kw">if</span>(b == <span class="nm">0</span>) <span class="kw">throw</span> <span class="st">"Divide by zero!"</span>;
+    <span class="kw">return</span> a / b;
+}
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="kw">try</span> {
+        cout &lt;&lt; <span class="fn">divide</span>(<span class="nm">10</span>, <span class="nm">0</span>);
+    }
+    <span class="kw">catch</span>(<span class="kw">const</span> <span class="ty">char</span>* msg) {
+        cout &lt;&lt; <span class="st">"Error: "</span> &lt;&lt; msg;
+    }
+    <span class="cm">// Output: Error: Divide by zero!</span>
+}</pre>
+    <div class="concept-box green">
+      <h3>Multiple catch blocks</h3>
+    </div>
+<pre><span class="kw">try</span> { <span class="kw">throw</span> <span class="nm">42</span>; }
+<span class="kw">catch</span>(<span class="ty">int</span> e)   { cout &lt;&lt; <span class="st">"int: "</span>   &lt;&lt; e; }
+<span class="kw">catch</span>(<span class="ty">string</span> e) { cout &lt;&lt; <span class="st">"str: "</span> &lt;&lt; e; }
+<span class="kw">catch</span>(...)     { cout &lt;&lt; <span class="st">"Unknown"</span>;     }</pre>
+    <div class="tip-box"><strong>Error vs Exception:</strong> Error = syntax/logic issue. Exception = formal runtime object that "bubbles up" the call stack.</div>
+  </div>
+</div>
+
+<!-- ===== T29: EXCEPTION SPECIFICATION ===== -->
+<div class="topic-card" id="t29">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L34</span>
+      <div><div class="topic-title">Exception Specification & std::terminate()</div><div class="topic-subtitle">noexcept and unhandled exceptions</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>Exception Specification</h3>
+      <p>Tells whether a function may throw an exception or not. Acts like a <strong>promise to the compiler</strong>. In modern C++, use <code>noexcept</code>.</p>
+    </div>
+<pre><span class="ty">void</span> <span class="fn">safeFunction</span>() <span class="kw">noexcept</span> {   <span class="cm">// promises NOT to throw</span>
+    <span class="cm">// safe operations only</span>
+}
+
+<span class="ty">void</span> <span class="fn">riskyFunction</span>() {           <span class="cm">// may throw</span>
+    <span class="kw">throw</span> <span class="st">"Error"</span>;
+}</pre>
+    <div class="concept-box red">
+      <h3>std::terminate()</h3>
+      <p>Called when an exception <strong>cannot be handled</strong> — either no matching catch, or exception thrown in noexcept function. It <strong>aborts the program immediately</strong>.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <tr><th>Situation</th><th>What Happens</th></tr>
+      <tr><td>Exception not caught</td><td>std::terminate() called</td></tr>
+      <tr><td>Exception in noexcept fn</td><td>std::terminate() called</td></tr>
+      <tr><td>Exception in destructor</td><td>std::terminate() called</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===== T30: NAMESPACES ===== -->
+<div class="topic-card" id="t30">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L39</span>
+      <div><div class="topic-title">Namespaces & std</div><div class="topic-subtitle">Avoid naming conflicts</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>What is a Namespace?</h3>
+      <p>A namespace groups related identifiers (variables, functions, classes) to <strong>avoid naming conflicts</strong>. The C++ Standard Library is in the <code>std</code> namespace.</p>
+    </div>
+<pre><span class="kw">namespace</span> <span class="cl">MyProject</span> {
+    <span class="ty">int</span> counter = <span class="nm">0</span>;
+    <span class="ty">void</span> <span class="fn">print</span>() { cout &lt;&lt; <span class="st">"MyProject"</span>; }
+}
+
+<span class="cl">MyProject</span>::<span class="fn">print</span>();       <span class="cm">// scope resolution operator</span>
+<span class="kw">using</span> <span class="kw">namespace</span> <span class="cl">MyProject</span>;
+<span class="fn">print</span>();                   <span class="cm">// now can call directly</span></pre>
+    <div class="concept-box orange">
+      <h3>std Namespace</h3>
+      <ul>
+        <li>All standard library functions are in <code>std</code></li>
+        <li><code>std::cout</code>, <code>std::cin</code>, <code>std::vector</code></li>
+        <li>Use <code>using namespace std;</code> to avoid <code>std::</code> prefix</li>
+        <li>In large programs, prefer <code>std::</code> prefix explicitly</li>
+      </ul>
+    </div>
+    <div class="tip-box"><strong>Best practice:</strong> Never use <code>using namespace std;</code> in header files — it pollutes the global namespace for everyone who includes that header.</div>
+  </div>
+</div>
+
+<!-- ===== T31: STREAMS & I/O ===== -->
+<div class="topic-card" id="t31">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L36</span>
+      <div><div class="topic-title">Streams & Formatted I/O</div><div class="topic-subtitle">cin, cout, manipulators</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>What is a Stream?</h3>
+      <p>A stream is a <strong>sequence of bytes</strong> flowing between program and I/O device. Input stream flows into program; output stream flows out.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <tr><th>Object</th><th>Purpose</th></tr>
+      <tr><td><code>cin</code></td><td>Standard input (keyboard)</td></tr>
+      <tr><td><code>cout</code></td><td>Standard output (screen)</td></tr>
+      <tr><td><code>cerr</code></td><td>Standard error (unbuffered)</td></tr>
+      <tr><td><code>clog</code></td><td>Standard error (buffered)</td></tr>
+    </table></div>
+    <div class="section-label">Manipulators (need &lt;iomanip&gt;)</div>
+<pre><span class="kw">#include</span> <span class="st">&lt;iomanip&gt;</span>
+cout &lt;&lt; setw(<span class="nm">10</span>) &lt;&lt; <span class="st">"Name"</span>;         <span class="cm">// width 10</span>
+cout &lt;&lt; setprecision(<span class="nm">2</span>) &lt;&lt; <span class="nm">3.14159</span>; <span class="cm">// 2 decimal places</span>
+cout &lt;&lt; fixed &lt;&lt; <span class="nm">3.14</span>;              <span class="cm">// fixed notation</span>
+cout &lt;&lt; left &lt;&lt; setw(<span class="nm">10</span>) &lt;&lt; <span class="st">"Hi"</span>;   <span class="cm">// left align</span>
+
+<span class="cm">// getline — read whole line with spaces</span>
+<span class="ty">string</span> name;
+<span class="fn">getline</span>(cin, name);</pre>
+  </div>
+</div>
+
+<!-- ===== T32: FILE HANDLING ===== -->
+<div class="topic-card" id="t32">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L37/38</span>
+      <div><div class="topic-title">File Handling & Random Access</div><div class="topic-subtitle">fstream, seekg, seekp</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <span class="tag tag-exam">Exam Favourite</span>
+    <div class="concept-box">
+      <h3>File Streams</h3>
+      <ul>
+        <li><code>ifstream</code> — input (read)</li>
+        <li><code>ofstream</code> — output (write)</li>
+        <li><code>fstream</code> — both read and write</li>
+      </ul>
+    </div>
+<pre><span class="kw">#include</span> <span class="st">&lt;fstream&gt;</span>
+
+<span class="cm">// Write to file</span>
+<span class="ty">ofstream</span> outFile(<span class="st">"data.txt"</span>);
+outFile &lt;&lt; <span class="st">"Hello File!"</span>;
+outFile.<span class="fn">close</span>();
+
+<span class="cm">// Read from file</span>
+<span class="ty">ifstream</span> inFile(<span class="st">"data.txt"</span>);
+<span class="ty">string</span> line;
+<span class="fn">getline</span>(inFile, line);
+cout &lt;&lt; line;   <span class="cm">// Hello File!</span>
+inFile.<span class="fn">close</span>();</pre>
+    <div class="section-label">Random Access</div>
+<pre><span class="cm">// seekg — move get pointer (reading)</span>
+<span class="cm">// seekp — move put pointer (writing)</span>
+<span class="cm">// tellg — get current read position</span>
+<span class="cm">// tellp — get current write position</span>
+
+<span class="ty">fstream</span> f(<span class="st">"data.txt"</span>);
+f.<span class="fn">seekg</span>(<span class="nm">100</span>);        <span class="cm">// jump to byte 100</span>
+f.<span class="fn">seekg</span>(<span class="nm">0</span>, ios::end); <span class="cm">// jump to end of file</span>
+f.<span class="fn">seekg</span>(-<span class="nm">10</span>, ios::cur);<span class="cm">// go back 10 bytes</span>
+cout &lt;&lt; f.<span class="fn">tellg</span>();    <span class="cm">// current position</span></pre>
+    <div class="table-wrap"><table>
+      <tr><th>Mode</th><th>Meaning</th></tr>
+      <tr><td>ios::beg</td><td>From beginning</td></tr>
+      <tr><td>ios::cur</td><td>From current position</td></tr>
+      <tr><td>ios::end</td><td>From end</td></tr>
+    </table></div>
+    <div class="tip-box"><strong>Sequential vs Random:</strong> Sequential = read from start every time. Random = jump to specific position directly (much faster for large files).</div>
+  </div>
+</div>
+
+<!-- ===== T33: STL & MODERN C++ ===== -->
+<div class="topic-card" id="t33">
+  <div class="topic-header" onclick="toggle(this)">
+    <div class="topic-header-left">
+      <span class="topic-num" style="background:rgba(121,192,255,0.15);color:#79c0ff">L31/40</span>
+      <div><div class="topic-title">STL & Modern C++ Features</div><div class="topic-subtitle">Containers, algorithms, smart pointers, lambdas</div></div>
+    </div>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="topic-body">
+    <div class="concept-box">
+      <h3>STL — Standard Template Library</h3>
+      <p>Pre-written, tested, optimized data structures and algorithms. Saves time and reduces errors.</p>
+    </div>
+    <div class="section-label">Key Containers</div>
+<pre><span class="kw">#include</span> <span class="st">&lt;vector&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;map&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;set&gt;</span>
+
+vector&lt;<span class="ty">int</span>&gt; v = {<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>};
+v.<span class="fn">push_back</span>(<span class="nm">4</span>);          <span class="cm">// add to end</span>
+
+map&lt;<span class="ty">string</span>,<span class="ty">int</span>&gt; marks;
+marks[<span class="st">"Aditya"</span>] = <span class="nm">95</span>;   <span class="cm">// key-value pair</span>
+
+<span class="kw">for</span>(<span class="kw">auto</span> x : v) cout &lt;&lt; x; <span class="cm">// range-based for loop</span></pre>
+    <div class="section-label">Modern Features (C++11 and beyond)</div>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Example</th><th>Benefit</th></tr>
+      <tr><td>auto keyword</td><td><code>auto x = 10;</code></td><td>Type deduction</td></tr>
+      <tr><td>Range-based for</td><td><code>for(auto x : arr)</code></td><td>Cleaner loops</td></tr>
+      <tr><td>Lambda</td><td><code>[](int x){ return x*2; }</code></td><td>Inline functions</td></tr>
+      <tr><td>Smart Pointers</td><td><code>unique_ptr&lt;int&gt; p</code></td><td>No memory leaks</td></tr>
+      <tr><td>nullptr</td><td><code>int* p = nullptr;</code></td><td>Safe null pointer</td></tr>
+    </table></div>
+<pre><span class="cm">// Lambda expression</span>
+<span class="kw">auto</span> square = [](<span class="ty">int</span> x) { <span class="kw">return</span> x * x; };
+cout &lt;&lt; <span class="fn">square</span>(<span class="nm">5</span>);   <span class="cm">// 25</span>
+
+<span class="cm">// Smart pointer — auto-deletes memory</span>
+<span class="ty">unique_ptr</span>&lt;<span class="ty">int</span>&gt; ptr = make_unique&lt;<span class="ty">int</span>&gt;(<span class="nm">42</span>);</pre>
+    <div class="tip-box"><strong>RTTI:</strong> Runtime Type Information. <code>typeid(obj)</code> gives type name. <code>dynamic_cast</code> uses RTTI for safe downcasting.</div>
+  </div>
+</div>
+
+  </div><!-- end #content -->
+</div><!-- end #main -->
+
+<button id="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+  updateProgress();
+}
+
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (!el.classList.contains('open')) el.classList.add('open');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  updateProgress();
+}
+
+function updateProgress() {
+  const cards = document.querySelectorAll('.topic-card');
+  const open = document.querySelectorAll('.topic-card.open').length;
+  document.getElementById('progress-fill').style.width = (open / cards.length * 100) + '%';
+}
+
+function filterNav(val) {
+  const items = document.querySelectorAll('.nav-item');
+  val = val.toLowerCase();
+  items.forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(val) ? 'flex' : 'none';
+  });
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+window.addEventListener('scroll', () => {
+  const cards = document.querySelectorAll('.topic-card');
+  const navItems = document.querySelectorAll('.nav-item');
+  let current = '';
+  cards.forEach(card => {
+    if (card.getBoundingClientRect().top < 150) current = card.id;
+  });
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(current)) {
+      item.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+  </html>
